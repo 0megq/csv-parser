@@ -1,8 +1,10 @@
-# Default target entry
-all:
-	gcc -o target/CSVParser tests/tests.c src/csv.c -Wall -Wextra -std=c99 -Wno-missing-braces -g -O0
+TARGETDIR="target"
+TARGET="${TARGETDIR}/CSVParser.exe"
 
-# Clean everything
+all:
+	mkdir -p ${TARGETDIR}
+	gcc -o ${TARGET} tests/tests.c src/csv.c -Wall -Wextra -std=c99 -Wno-missing-braces -g -O0
+
 clean:
-	del *.o target/CSVParser.exe /s
+	rm -rf ${TARGETDIR}
 
