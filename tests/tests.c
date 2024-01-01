@@ -4,21 +4,37 @@
 
 char *load_file_as_string(const char *file_name);
 void unload_file_text(char *text);
-void test_csv_split_by_newlines(const char *input);
+void test_csv_split_by_newlines(void);
+void test_csv_parse_line(void);
 
 int main()
 {
-	char *text = load_file_as_string("tests/test.csv");
-	if (!text)
-		return -1;
-	test_csv_split_by_newlines(text);
-	unload_file_text(text);
+	test_csv_split_by_newlines();
+	test_csv_parse_line();
 	return 0;
 }
 
-void test_csv_split_by_newlines(const char *input)
+void test_csv_parse_line(void)
 {
-	char **split_by_nl = csv_split_by_newlines(input);
+	printf("Running csv_parse_line test...\n");
+	char **parsed_line = csv_parse_line("hello,fhji,df,idlik");
+	char **ptr = parsed_line;
+	while (*ptr)
+	{
+		printf("%s\n", *ptr);
+		ptr++;
+	}
+	csv_free_parse_line(parsed_line);
+}
+
+void test_csv_split_by_newlines(void)
+{
+	printf("Running csv_split_by_newlines test...\n");
+	char *text = load_file_as_string("tests/test.csv");
+	if (!text)
+		return;
+
+	char **split_by_nl = csv_split_by_newlines(text);
 	char **ptr = split_by_nl;
 	while (*ptr)
 	{
@@ -26,6 +42,8 @@ void test_csv_split_by_newlines(const char *input)
 		ptr++;
 	}
 	csv_free_split_by_newlines(split_by_nl);
+
+	unload_file_text(text);
 }
 
 char *load_file_as_string(const char *file_name)
