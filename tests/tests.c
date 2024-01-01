@@ -17,12 +17,13 @@ int main()
 void test_csv_parse_line(void)
 {
 	printf("Running csv_parse_line test...\n");
-	char **parsed_line = csv_parse_line("hello,fhji,df,idlik");
-	char **ptr = parsed_line;
-	while (*ptr)
+	size_t entry_count = 0;
+	char **parsed_line = csv_parse_line("hello,fhji,df,idlik", &entry_count);
+
+	printf("%llu entries:\n", entry_count);
+	for (size_t i = 0; i < entry_count; i++)
 	{
-		printf("%s\n", *ptr);
-		ptr++;
+		printf("%s\n", parsed_line[i]);
 	}
 	csv_free_parse_line(parsed_line);
 }
@@ -34,12 +35,13 @@ void test_csv_split_by_newlines(void)
 	if (!text)
 		return;
 
-	char **split_by_nl = csv_split_by_newlines(text);
-	char **ptr = split_by_nl;
-	while (*ptr)
+	size_t line_count = 0;
+	char **split_by_nl = csv_split_by_newlines(text, &line_count);
+
+	printf("%llu lines:\n", line_count);
+	for (size_t i = 0; i < line_count; i++)
 	{
-		printf("%s\n", *ptr);
-		ptr++;
+		printf("%s\n", split_by_nl[i]);
 	}
 	csv_free_split_by_newlines(split_by_nl);
 

@@ -13,14 +13,16 @@ void csv_free_parse_str(char ***parsed)
 {
 }
 
-char **csv_parse_line(const char *line)
+char **csv_parse_line(const char *line, size_t *entry_count)
 {
-	int entry_count = count_char(line, ',');
+	if (!entry_count)
+		return NULL;
+	*entry_count = count_char(line, ',');
 	if (line[strlen(line) - 1] != ',')
-		entry_count++;
+		(*entry_count)++;
 
 	char **buffer, **buffer_ptr;
-	buffer_ptr = buffer = calloc(entry_count + 1, sizeof(char *));
+	buffer_ptr = buffer = calloc(*entry_count + 1, sizeof(char *));
 	int entry_place = 0;
 	if (!buffer)
 		return NULL;
@@ -71,14 +73,16 @@ void csv_free_parse_line(char **parsed)
 	free(parsed);
 }
 
-char **csv_split_by_newlines(const char *str)
+char **csv_split_by_newlines(const char *str, size_t *line_count)
 {
-	int line_count = count_char(str, '\n');
+	if (!line_count)
+		return NULL;
+	*line_count = count_char(str, '\n');
 	if (str[strlen(str) - 1] != '\n')
-		line_count++;
+		(*line_count)++;
 
 	char **buffer, **buffer_ptr;
-	buffer_ptr = buffer = calloc(line_count + 1, sizeof(char *));
+	buffer_ptr = buffer = calloc(*line_count + 1, sizeof(char *));
 	int line_place = 0;
 	if (!buffer)
 		return NULL;
