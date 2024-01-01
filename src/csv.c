@@ -15,10 +15,54 @@ void csv_free_parse_str(char ***parsed)
 
 char **csv_parse_line(const char *line)
 {
+	int entry_count = count_char(line, ',');
+	char **buffer, **buffer_ptr;
+	buffer_ptr = buffer = calloc(entry_count + 1, sizeof(char *));
+	int entry_place = 0;
+	if (!buffer)
+		return NULL;
+
+	while (*line)
+	{
+		if (!*buffer_ptr)
+		{
+			*buffer_ptr = calloc((get_char_index(line, ',') + 1), sizeof(char)); // start here. allocating memory for strings in string array
+			if (!*buffer_ptr)
+				return NULL;
+		}
+		if (*line == ',')
+		{
+			buffer_ptr[0][entry_place] = '\0';
+			if (line[1])
+			{
+				entry_place = 0;
+				buffer_ptr++;
+			}
+		}
+		else
+		{
+			buffer_ptr[0][entry_place++] = *line;
+		}
+
+		line++;
+	}
+	buffer_ptr[0][entry_place] = '\0';
+	buffer_ptr[1] = NULL;
+	return buffer;
 }
 
 void csv_free_parse_line(char **parsed)
 {
+	if (!parsed)
+		return;
+
+	char **parsed_ptr = parsed;
+	while (*parsed_ptr)
+	{
+		free(*parsed_ptr);
+		parsed_ptr++;
+	}
+	free(parsed);
 }
 
 char **csv_split_by_newlines(const char *str)
@@ -41,7 +85,7 @@ char **csv_split_by_newlines(const char *str)
 		}
 		if (*str == '\n')
 		{
-			(*buffer_ptr)[line_place] = '\0';
+			buffer_ptr[0][line_place] = '\0';
 			if (str[1])
 			{
 				line_place = 0;
@@ -50,13 +94,13 @@ char **csv_split_by_newlines(const char *str)
 		}
 		else
 		{
-			(*buffer_ptr)[line_place++] = *str;
+			buffer_ptr[0][line_place++] = *str;
 		}
 
 		str++;
 	}
-	(*buffer_ptr)[line_place] = '\0';
-	*(buffer_ptr + 1) = NULL;
+	buffer_ptr[0][line_place] = '\0';
+	buffer_ptr[1] = NULL;
 	return buffer;
 }
 
@@ -69,6 +113,7 @@ void csv_free_split_by_newlines(char **split)
 	while (*split_ptr)
 	{
 		free(*split_ptr);
+		*split_ptr = NULL;
 		split_ptr++;
 	}
 	free(split);
