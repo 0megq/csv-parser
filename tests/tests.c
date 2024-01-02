@@ -6,19 +6,47 @@ char *load_file_as_string(const char *file_name);
 void unload_file_text(char *text);
 void test_csv_split_by_newlines(void);
 void test_csv_parse_line(void);
+void test_csv_parse_str(void);
 
 int main()
 {
-	test_csv_split_by_newlines();
-	test_csv_parse_line();
+	// test_csv_split_by_newlines();
+	// test_csv_parse_line();
+	test_csv_parse_str();
 	return 0;
+}
+
+void test_csv_parse_str(void)
+{
+	printf("----------------------------------------\n");
+	printf("Running csv_parse_str test...\n");
+	printf("----------------------------------------\n");
+	char *text = load_file_as_string("tests/test.csv");
+	if (!text)
+		return;
+
+	const char *const *const *parsed = csv_parse_str(text);
+
+	printf("Printing parsed csv as table...\n");
+	for (size_t i = 0; parsed[i] != NULL; i++)
+	{
+		printf("%llu: [", i + 1);
+		for (size_t j = 0; parsed[i][j] != NULL; j++)
+		{
+			printf(" %llu {%s},", j + 1, parsed[i][j]);
+		}
+		printf("]\n");
+	}
+	csv_free_parse_str(parsed);
 }
 
 void test_csv_parse_line(void)
 {
+	printf("----------------------------------------\n");
 	printf("Running csv_parse_line test...\n");
+	printf("----------------------------------------\n");
 	size_t entry_count = 0;
-	char **parsed_line = csv_parse_line("hello,fhji,df,idlik", &entry_count);
+	const char *const *parsed_line = csv_parse_line("hello,fhji,df,idlik", &entry_count);
 
 	printf("%llu entries:\n", entry_count);
 	for (size_t i = 0; i < entry_count; i++)
@@ -30,13 +58,16 @@ void test_csv_parse_line(void)
 
 void test_csv_split_by_newlines(void)
 {
+	printf("----------------------------------------\n");
 	printf("Running csv_split_by_newlines test...\n");
+	printf("----------------------------------------\n");
+
 	char *text = load_file_as_string("tests/test.csv");
 	if (!text)
 		return;
 
 	size_t line_count = 0;
-	char **split_by_nl = csv_split_by_newlines(text, &line_count);
+	const char *const *split_by_nl = csv_split_by_newlines(text, &line_count);
 
 	printf("%llu lines:\n", line_count);
 	for (size_t i = 0; i < line_count; i++)
@@ -50,7 +81,7 @@ void test_csv_split_by_newlines(void)
 
 char *load_file_as_string(const char *file_name)
 {
-	FILE *file = fopen(file_name, "rb");
+	FILE *file = fopen(file_name, "r");
 	char *buffer;
 	size_t length;
 	size_t count;
